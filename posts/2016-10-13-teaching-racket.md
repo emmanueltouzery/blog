@@ -436,8 +436,8 @@ Racket is fun!
 
 But the truth is, at this point I still don't know for sure whether `scratch`
 would have been a better choice and maybe racket was the selfish choice for me
-(more fun). But if it would be better "traditional" languages, I'm very confident
-`racket` was the best option.
+(more fun). But among "traditional" languages, I'm very confident `racket`
+was the best option.
 
 Asking the kids, they liked it, although the youngest one (at 8) had a hard time
 towards the end. I do think they picked up some geometry at least along the way,
