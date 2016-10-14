@@ -16,7 +16,7 @@ from to more classical programming languages. I may have been wrong on this, I
 confess that I didn't spend as much time researching `Scratch` as I should have.
 
 I've spent some time considering which language to use, but it was a true
-coincidence that I was listening one day to the Functional Geekery podcast
+coincidence that I was listening one day to the *Functional Geekery* podcast
 [interview of Conrad Barski](https://www.functionalgeekery.com/episode-38-dr-conrad-barski/),
 where he mentioned his [Land of Lisp](http://landoflisp.com/) book, and its
 [Realm of Racket](http://www.realmofracket.com/) sequel.
