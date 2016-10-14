@@ -128,3 +128,7 @@ div.note {
     padding-left: 15px;
     padding-right: 10px;
 }
+
+div.note code, div.node .sourceCode {
+    font-size: 12px;
+}
