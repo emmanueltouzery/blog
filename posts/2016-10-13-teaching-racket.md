@@ -3,7 +3,7 @@ title: My experience teaching my kids some programming
 author: emmanuel
 ---
 
-As a professionnal software developer, and with my older daughter Lara being 11 years
+As a professional software developer, and with my older daughter Lara being 11 years
 old, and the second one Kristina 8, I figured it made sense to spend some time trying
 to introduce them to programming. My father introduced me to it at a slightly
 later age, but still relatively early (it was some BASIC dialect at the time).
