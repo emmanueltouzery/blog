@@ -13,17 +13,30 @@ After some research I decided to eschew the usual choice of
 because I thought it too imperative, not emphasizing enough programming as
 composition of smaller pieces, and not being something you can easily grow
 from to more classical programming languages. I may have been wrong on this, I
-confess that I didn't spend as much time researching `scratch` as I should have.
+confess that I didn't spend as much time researching `Scratch` as I should have.
 
-Instead I bought the [Realm of Racket](http://www.realmofracket.com/) book,
-which was a great source of inspiration.
+I've spent some time considering which language to use, but it was a true
+coincidence that I was listening one day to the Functional Geekery podcast
+[interview of Conrad Barski](https://www.functionalgeekery.com/episode-38-dr-conrad-barski/),
+where he mentioned his [Land of Lisp](http://landoflisp.com/) book, and its
+[Realm of Racket](http://www.realmofracket.com/) sequel.
+I've had the wish to learn a `lisp` for some time, and I'm also biased towards
+more functional languages and approaches (FP). So I bought the  book,
+which was a great source of inspiration. I also ordered a Scratch book at the
+same time, but I actually never opened it, because it became quickly clear to
+me that racket was going to be the one.
+
 The racket language, as a `scheme` dialect (itself a `lisp` dialect), seems like
 a great fit for teaching children:
 
 * very little syntax
-* no keywords, translate-able (see lower)
+* no keywords, translate-able (see below)
 * very good libraries and material for teaching, like [HtDP](http://www.htdp.org/)
-* a REPL and the DrRacket GUI
+* a REPL and the DrRacket IDE
+
+In addition the `Realm of Racket` book is built around the idea of building
+increasingly complex games to introduce children to programming, which I thought
+was a great approach.
 
 For older children with some experience in mathematics, I would actually
 consider `haskell`, but at this age I think `racket` is a great option.
@@ -142,7 +155,10 @@ A session of playing this game looks like that (again, example from the book):
 ```
 
 The hardest thing here was explaining the binary search algorithm. But they
-got it, it's pretty intuitive in the context of guessing a number.
+got it, it's pretty intuitive in the context of guessing a number. They quickly
+understood that picking the number in the middle of the interval would get
+the result faster, although of course their first plan was to try 1, then 2,
+and so on.
 
 Regarding the implementation, while I'm not a great fan of the mutation, it's
 pretty concise, and the game was a great success with the kids.
@@ -157,7 +173,7 @@ that they could see the effects of the changes by themselves. I think that was
 an important aspect, that they could grasp this sense of interactivity and
 control.
 
-Then I would slowly have them make the changes themselves and try them up.
+Then I would slowly have them make the changes themselves and try them out.
 
 # Graphics
 
@@ -210,7 +226,7 @@ second circle in the right position and at the right size. Their success showed
 that they had at least some understanding of the program structure and of the
 geometry involved. Thank you `CodeWorld`!
 
-Also thumbs up to DrRacket for displaying also pictures in the REPL output!
+Also thumbs up to DrRacket for displaying pictures in the REPL output!
 
 ## The Big Bang
 
@@ -231,7 +247,7 @@ taking the state, and functions to transform the state when any of those events
 occur.
 
 The first obvious program we built was to have the snowman fall on the display.
-Our state is be a single integer: the y position of the snowman, and it
+Our state is a single integer: the y position of the snowman, and it
 increases with time.
 We also modify our existing `snowman` function to take as a parameter the
 vertical offset at which to draw.
@@ -351,10 +367,10 @@ it myself. But they had fun playing with the updated game afterwards and the
 eldest daughter could understand structs much better after that. It was very
 tough for the younger one though.
 
-During that lesson I also considered introducing racket pattern-matching, which
-would have helped making the code more concise. With pattern matching, you give
-the "shape" of the parameter the function expects, and you can deconstruct it to
-extract directly the field(s) you're interested it in a new variable[^patternmatch].
+<div class="note">
+I also considered introducing pattern-matching, where you give
+the "shape" of the data to deconstruct it and extract the
+field(s) you're interested in[^patternmatch].
 
 ```scheme
 ;; our game state-state struct has two fields: position top & left
@@ -365,17 +381,17 @@ extract directly the field(s) you're interested it in a new variable[^patternmat
   (>= (game-state-position-top state) (- 300 60)))
 
 ;; pattern matching
-;; we extract the first field of the game-state and name the variable 'top'
-;; we ignore the second field, mark it with an underscore
+;; extract the first field of the game-state to the variable 'top'
 (define/match* (end2? (game-state top _))
   (>= top (- 300 60)))
 ```
 
-But ultimately it was painfully clear that already the introduction of structs
-was well enough on its own without adding more new concepts, so I renounced it.
-That did make the rest of code more verbose, in the same way than what [`Realm of
-Racket` is doing](http://stackoverflow.com/questions/36228594), with many
+But already the introduction of structs was well enough without
+adding more concepts, so I renounced it.
+The code is more verbose, [as in `Realm of
+Racket`](http://stackoverflow.com/questions/36228594), with many
 `define` calls, but it was the best compromise at that point.
+</div>
 
 # Flappy bird
 

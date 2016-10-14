@@ -108,3 +108,17 @@ td.sourceCode { padding-left: 5px; }
 .sourceCode span.fu { color: #06287e; }
 .sourceCode span.re { }
 .sourceCode span.er { color: red; font-weight: bold; }
+
+div.note {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    margin-left: 40px;
+    margin-right: 40px;
+    font-size: 12px;
+    color: #555555;
+    border-color: #cccccc;
+    border-left-width: 2px;
+    border-left-style: solid;
+    padding-left: 15px;
+    padding-right: 10px;
+}
