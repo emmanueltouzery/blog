@@ -49,8 +49,8 @@ how much programming they actually learned. We did work on their geometry
 skills when working on the game, at the very least.
 
 I don't claim to have achieved anything better than if we had went with
-`scratch`. Maybe it would have been a better choice in the end. I don't know
-scratch enough to make a judgment on that.
+`Scratch`. Maybe it would have been a better choice in the end. I don't know
+Scratch enough to make a judgment on that.
 
 I've put slightly edited versions of the source code we've produced
 [on github](https://www.github.com/emmanueltouzery/racket-summer-programming/).
@@ -450,7 +450,7 @@ with school and extra-school activities, the kids already have their hands full!
 
 Racket is fun!
 
-But the truth is, at this point I still don't know for sure whether `scratch`
+But the truth is, at this point I still don't know for sure whether `Scratch`
 would have been a better choice and maybe racket was the selfish choice for me
 (more fun). But among "traditional" languages, I'm very confident `racket`
 was the best option.
@@ -463,7 +463,7 @@ We'll see when we resume this work. As I said, during the school year it's never
 easy. Certainly at worst next summer we'll do again something like that.
 
 My eldest, at 11, will have a course of programming at school this year, using
-`scratch`. I'm curious of what she'll tell me about how much her experience
+`Scratch`. I'm curious of what she'll tell me about how much her experience
 with racket helped or not.
 
 [^threading]: Those macros don't ship with racket, you must install the
