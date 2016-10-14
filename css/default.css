@@ -6,6 +6,11 @@ body {
     font-family: 'Merriweather', serif;
 }
 
+code, .sourceCode {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 15px;
+}
+
 div#header {
     border-bottom: 2px solid black;
     margin-bottom: 30px;
