@@ -267,9 +267,9 @@ vertical offset at which to draw.
      (place-image/align
       (circle 10 "solid" "white") 250 position "left" "top" _)))
 
-(big-bang 0
-          (on-tick add1) ;; increase the Y offset with time
-          (on-draw snowman))
+(big-bang 0                  ;; the initial state is the integer 0
+          (on-tick add1)     ;; increase the Y offset with time
+          (on-draw snowman)) ;; will be called with the state as parameter
 ```
 
 <img src="../images/2016-10-09-teaching-racket-snowman-anim.png"
