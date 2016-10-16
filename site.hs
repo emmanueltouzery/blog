@@ -13,7 +13,7 @@ main = hakyll $ do
 
     match "css/*" $ do
         route   idRoute
-        compile compressCssCompiler
+        compile copyFileCompiler
 
     match "*.md" $ do
         route   $ setExtension "html"
