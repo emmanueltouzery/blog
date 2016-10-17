@@ -65,7 +65,7 @@ my teaching plans.
 
 ## Prerequisites
 
-Racket's standard library functions are obviously named in english. I decided to try as
+Racket's standard library functions are obviously named in English. I decided to try as
 much as possible to translate function names to Slovenian, which is the language
 my children are fluent in. Something like that would be impossible in many
 traditional languages, but it's no problem do it in `racket` (well, [I still had to
@@ -75,11 +75,11 @@ Thanks to this, the core `scheme` function `define` became `naj-bo`, `if` became
 many library function names.
 
 An issue that turned up with that though, was that error messages (compile errors) would
-still come up in english, and were then even more baffling to children than they
+still come up in English, and were then even more baffling to children than they
 would be otherwise (you can't relate to an '`undefined`' error message if you
 didn't actually use '`define`' in the first place..).
 
-When I'll give example code from now on, I'll use english, but we did actually
+When I'll give example code from now on, I'll use English, but we did actually
 type it in Slovenian with the children.
 
 ## Beginnings
