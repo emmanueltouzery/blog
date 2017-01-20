@@ -132,3 +132,19 @@ div.note {
 div.note code, div.node .sourceCode {
     font-size: 12px;
 }
+
+div.withborder table {
+    border-collapse: collapse;
+}
+
+div.withborder table {
+    border: 1px solid black;
+}
+div.withborder th {
+    border: 1px solid black;
+    padding: 3px;
+}
+div.withborder td {
+    border: 1px solid black;
+    padding: 3px;
+}
