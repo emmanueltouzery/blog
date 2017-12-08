@@ -1,14 +1,24 @@
+html {
+    font-size: 18px;
+}
+
 body {
     color: black;
-    font-size: 16px;
+    font-size: 1rem;
     margin: 0px auto 0px auto;
-    width: 600px;
-    font-family: 'Merriweather', serif;
+    width: 780px;
+    font-family: "Roboto",Helvetica,sans-serif
+
+    /* 'Merriweather Sans', sans-serif; */
 }
+
+a:link {color:#326891; text-decoration:none;}
+a:visited {color:#326891; text-decoration:none;}
+a:hover {color:#326891; text-decoration:none;}
 
 code, .sourceCode {
     font-family: 'Roboto Mono', monospace;
-    font-size: 15px;
+    font-size: 0.9rem;
 }
 
 div#header {
@@ -20,7 +30,7 @@ div#header {
 div#logo a {
     color: black;
     float: left;
-    font-size: 18px;
+    font-size: 1.3rem;
     font-weight: bold;
     text-decoration: none;
 }
@@ -31,7 +41,7 @@ div#header #navigation {
 
 div#header #navigation a {
     color: black;
-    font-size: 18px;
+    font-size: 1.3rem;
     font-weight: bold;
     margin-left: 12px;
     text-decoration: none;
@@ -41,23 +51,29 @@ div#header #navigation a {
 div#footer {
     border-top: solid 2px black;
     color: #555;
-    font-size: 12px;
+    font-size: 0.6rem;
     margin-top: 30px;
     padding: 12px 0px 12px 0px;
     text-align: right;
 }
 
 h1 {
-    font-size: 24px;
+    font-size: 1.4rem;
+    margin-top: 25px;
 }
 
 h2 {
-    font-size: 20px;
+    font-size: 1.3rem;
+    margin-top: 20px;
+}
+
+h3 {
+    font-size: 1rem;
 }
 
 div.info {
     color: #555;
-    font-size: 14px;
+    font-size: 0.8rem;
     font-style: italic;
 }
 
@@ -120,7 +136,7 @@ div.note {
     margin-bottom: 25px;
     margin-left: 40px;
     margin-right: 40px;
-    font-size: 13px;
+    font-size: 0.7rem;
     color: #555555;
     border-color: #cccccc;
     border-left-width: 2px;
@@ -130,7 +146,7 @@ div.note {
 }
 
 div.note code, div.node .sourceCode {
-    font-size: 12px;
+    font-size: 0.6rem;
 }
 
 div.withborder table {
@@ -142,9 +158,16 @@ div.withborder table {
 }
 div.withborder th {
     border: 1px solid black;
-    padding: 3px;
+    padding: 10px;
 }
 div.withborder td {
     border: 1px solid black;
-    padding: 3px;
+    padding: 10px;
+}
+
+span.tech-tag {
+    background-color: #E1ECF4;
+    color: #39739d;
+    padding: 0.3rem 0.4rem;
+    font-size: 0.7rem;
 }
