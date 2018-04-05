@@ -14,3 +14,8 @@ When implementing [prelude.ts](https://github.com/emmanueltouzery/prelude.ts), I
 put some thought how to offer the features I'm used to from more traditional
 FP languages, while keeping a light-handed approach. A more complex approach would
 better fit in a standalone, separate library.
+
+Prelude tackles the issue from two point of views:
+
+1. generic handling
+2. custom handling for prelude builtin types
