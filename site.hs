@@ -42,6 +42,20 @@ main = hakyll $ do
                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                 >>= relativizeUrls
 
+    create ["prelude.html"] $ do
+        route idRoute
+        compile $ do
+            posts <- recentFirst =<< loadAll "posts/*-prelude-*"
+            let preludeCtx =
+                    listField "posts" postCtx (return posts) <>
+                    constField "title" "Prelude.ts posts"    <>
+                    defaultContext
+
+            makeItem ""
+                >>= loadAndApplyTemplate "templates/prelude.html" preludeCtx
+                >>= loadAndApplyTemplate "templates/default.html" preludeCtx
+                >>= relativizeUrls
+
 
     match "index.html" $ do
         route idRoute
