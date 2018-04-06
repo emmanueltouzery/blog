@@ -36,6 +36,21 @@ that code that you know is correct is in fact correct.
 We use either inheritance or discriminated unions. For instance:
 
     type Option<T> = Some<T> | None<T>;
+    
+If you use typescript, that means that you care about safety and the ability
+to reason about your code. An `Option` is a value which is either present, or
+not present. For instance:
+
+    Option.of(5)          // value is present
+    Option.none<number>() // value is not present
+    
+Trying to read the value of an empty option makes no sense. For that reason,
+prelude offers two ways to read the value of an Option: `Some.get` and
+`Option.getOrThrow`. The latter is available on both `Some` and `None`, but
+`get` is available only on `Some`.
+
+So if you've convinced the compiler that all your uses of the option are safe,
+then you should always use `get` or (maybe `getOrElse`), but never `getOrThrow`.
 
 So now if we are given an `Option<T>`, and we need to do something in case it's
 a `Some`, and something else in case it's a `None`, what can we do?
@@ -131,3 +146,22 @@ Or even:
 
     Vector.of<number|string|boolean>(1,"a",2,3,"b",true).partition(typeOf("number"))
     // => [Vector.of<number>(1,2,3), Vector.of<string|boolean>("a","b",true)]
+
+## Beyond `Option`
+
+We've talked about discriminated types and type guards in prelude.ts for `Option`.
+But this pattern repeats in many locations in prelude.ts, beyond the case of Option.
+
+For instance:
+
+* `LinkedList` can be `ConsLinkedList` or `EmptyLinkedList`. On `ConsLinkedList`,
+  [head](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/linkedlist.conslinkedlist.html#head)
+  and [last](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/linkedlist.conslinkedlist.html#last)
+  return a `Some` instead of a simple `Option` like `EmptyLinkedList` does. And
+  the type guard for LinkedList is `isEmpty`
+* `Stream` can be a `ConsStream` or an `EmptyStream`. It behaves the same as
+  `LinkedList` in that regard.
+* `Either` can be a `Left` or a `Right`. Left has the extra Left.getLeft method 
+   that Right doesn't have. Right has the extra Right.get method that Left 
+   doesn't have. The type guard is `isRight`.
+  
