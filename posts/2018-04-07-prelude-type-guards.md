@@ -22,7 +22,7 @@ function isPositive(x: number): boolean { return x >= 0; }
 
 Type guards, then, are special types of predicates. What they return can be
 seen as special kinds of booleans. Type guards live purely in the type world
-and have no effect on the runtime at all. You can use type guard to let
+and have no effect on the runtime at all. You can use a type guard to let
 the compiler infer a more precise type for a value in a certain context.
 
 ### Problem to solve
@@ -123,8 +123,8 @@ if the type is not `Some`, that it then must be `None`. But if we say quite
 literally that `Option=Some|None` instead of using inheritance, then the compiler
 can do that.
 
-So, no more casts in our `if` and `else`. That's already awesome, but we're just
-getting started!
+So, no more casts in our `if` and `else`, and less unsafe `getOrThrow` calls.
+That's already awesome, but we're just getting started!
 
 Before we move on further with type guards, note that about the `Option`
 case in particular, prelude.ts also offers a pretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match)
@@ -182,7 +182,7 @@ definition, accepts only type guards and returns collections with another type
 (`U`, which must extend `T`). While the second, catch-all signature, accepts plain
 predicates, and returns a collection of the same type `T` as the input.
 
-Here's maybe a more motivating example, something else than options:
+Here's a more motivating example, with something else than just options:
 
 ```javascript
 const canvas = Option.ofNullable(document.getElementById("myCanvas"))
@@ -381,7 +381,8 @@ if (!myVector.isEmpty()) {
 What's happening in the linked list example is that inside the `if`,
 the type of `myLinkedList` is not anymore `LinkedList<T>` but `ConsLinkedList<T>`.
 Which means that we know that the list contains at least one element. Therefore
-`last` doesn't return `Option<T>` but `Some<T>` (and the same holds for `head`).
+`last` doesn't return `Option<T>` but `Some<T>` (and the same holds for `head`),
+and so we can call `Some.get` instead of the basic `Option.getOrThrow`.
 
 That's it for today! You can learn more about my typescript functional library prelude.ts
 through its [website](https://github.com/emmanueltouzery/prelude.ts), [user guide](https://github.com/emmanueltouzery/prelude.ts/wiki/Prelude.ts-user-guide) 
