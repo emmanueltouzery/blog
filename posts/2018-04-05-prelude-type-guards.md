@@ -1,22 +1,12 @@
 ---
-title: Prelude.ts - pattern matching, type guards and conditional types
+title: Type guards and conditional types in typescript & prelude.ts
 author: emmanuel
 tags: prelude.ts, typescript, functional-programming
 ---
 
-One of the hallmarks of functional programming is pattern matching.
-[For now](https://github.com/tc39/proposal-pattern-matching), javascript doesn't
-offer special syntax to achieve it, and therefore also typescript doesn't.
-
-When implementing [prelude.ts](https://github.com/emmanueltouzery/prelude.ts), I
-put some thought how to offer the features I'm used to from more traditional
-FP languages, while keeping a light-handed approach. A more complex approach would
-better fit in a standalone, separate library.
-
-Prelude tackles the issue from two point of views:
-
-1. generic handling
-2. custom handling for prelude builtin types
+This post describes how the [prelude.ts](https://github.com/emmanueltouzery/prelude.ts)
+functional programming library takes advantage of typescript type guards and
+conditional types.
 
 ## What are type guards
 
@@ -31,8 +21,8 @@ function isPositive(x: number): boolean { return x >= 0; }
 
 Type guards, then, are special types of predicates. What they return can be
 seen as special kinds of booleans. Type guards live purely in the type world
-and have no effect on the runtime at all. You can use type guard to convince
-the compiler that code that you know is correct is in fact correct.
+and have no effect on the runtime at all. You can use type guard to let
+the compiler infer a more precise type for a value in a certain context.
 
 ### Problem to solve
 
@@ -74,10 +64,12 @@ So, if we did offer a function `isSome(): boolean`, you could do:
 ```java
 if (option.isSome()) {
     console.log((<Some<number>>option).get());
+    // or..
+    console.log(option.getOrThrow());
 }
 ```
 
-That's right, we must cast to Some, how would the compiler know for sure that we are
+That's right, we must cast to `Some`, how would the compiler know for sure that we are
 in fact dealing with a Some?
 
 For that purpose, typescript supports [flow control analysis](https://blog.mariusschulz.com/2016/09/30/typescript-2-0-control-flow-based-type-analysis)
@@ -85,7 +77,7 @@ when [type guards](https://www.typescriptlang.org/docs/handbook/advanced-types.h
 are present.
 
 In prelude, both `Some` and `None` offer a `isSome` and a `isNone` method. But
-instead of returning boolean, they return `x is Some<T>` and `x is None<T>`.
+instead of returning `boolean`, they return `x is Some<T>` and `x is None<T>`.
 
 ```java
 class Some<T> {
@@ -96,9 +88,11 @@ class None<T> {
 }
 ```
 
+`isSome` and `isNone` are therefore type guards, not simple predicates.
+
 ## Use in `if`
 
-Using this, we can do:
+With type guards, we can do:
 
 ```java
 // here myOption has type Option<number>
@@ -108,6 +102,10 @@ if (myOption.isSome()) {
     // here myOption has type None<number>
 }
 ```
+
+So the static type of the variable as seen by the compiler will depend on the
+context in which the variable is used. It is flow analysis (pioneered by Facebook's
+[flow](https://github.com/facebook/flow)).
 
 Careful though. We'll get the `None` type in the `else` branch only if we use
 the `type Option<T> = Some<T> | None<T>` and NOT if we use the inheritance form
@@ -121,8 +119,8 @@ can do that.
 So, no more casts in our `if` and `else`. That's already awesome, but we're just
 getting started!
 
-Before we move on further with type guards, note that talking about the `Option`
-case in particular, prelude.ts also offers a lpretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match)
+Before we move on further with type guards, note that about the `Option`
+case in particular, prelude.ts also offers a pretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match)
 method on Option, enabling to do:
 
 ```java
@@ -133,21 +131,25 @@ Option.of(5).match({
 // => "got 5"
 ```
 
-Ok, now back to type guards!
+Note that `match` is the catamorphism for `Option`. But now, back to type guards!
 
 ## Use in `filter`
 
-Besides "simple" cases like `if` statements, type guards are also applied (even in the typescript
-standard library, on `Array`, and also on prelude.ts's collections of course) on `filter`
+Besides "simple" cases like `if` statements, type guards can also be used (even in the typescript
+standard library, on `Array`, and also in prelude.ts's collections of course) on `filter`
 for instance.
 
 ```java
-Vector.of(Option.of(2),Option.none<number>(), Option.of(3)).filter(Option.isSome)
+Vector.of(Option.of(2),Option.none<number>(), Option.of(3))
+    .filter(Option.isSome)
 // => Vector.of(Option.of(2),Option.of(3)) of type Vector<Some<number>>
 ```
 
-Notice that the type of the result is not anymore `Vector<Option<number>>` but
-`Vector<Some<number>>`.
+So we take a vector of three options, two `Some` and one `None`. And then we filter the
+collection to keep only `Some`s. The collection is properly filtered, but note that the
+type of the result is not anymore `Vector<Option<number>>` but
+`Vector<Some<number>>`: typescript realized that since we filtered by a type guard,
+the generic type of the result collection must a `Some`.
 
 Prelude.ts also offers [typeOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#typeof)
 and [instanceOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#instanceof)
@@ -158,18 +160,40 @@ Vector.of<number|string>(1,"a",2,3,"b").filter(typeOf("number"))
 // => Vector.of<number>(1,2,3)
 ```
 
-Note that the type of the result is not anymore `Vector<number|string>` but
+The type of the result is not anymore `Vector<number|string>` but
 `Vector<number>`. This is possible because of the type signature of `filter`:
 
 ```java
-filter<U extends T>(fn:(v:T)=>v is U): Collection<U>;
-filter(predicate:(v:T)=>boolean): Collection<T>;
+class Collection<T> {
+    filter<U extends T>(fn:(v:T)=>v is U): Collection<U>;
+    filter(predicate:(v:T)=>boolean): Collection<T>;
+}
 ```
 
 As you can see, the type signature is overloaded. The first, more precise,
 definition, accepts only type guards and returns collections with another type
-(`U`, which must extend `T`). While the second, catch-all type, accepts plain
-booleans, and returns a collection of the same type `T` as the input.
+(`U`, which must extend `T`). While the second, catch-all signature, accepts plain
+predicates, and returns a collection of the same type `T` as the input.
+
+Here's maybe a more motivating example, something else than options:
+
+```javascript
+const canvas = Option.ofNullable(document.getElementById("myCanvas"))
+    .filter(instanceOf(HTMLCanvasElement))
+    .getOrThrow("Cannot find the canvas element!");
+```
+
+Keep in mind that also Option offers a `filter` method. So what we do here,
+is that we lookup an html element in the DOM, by the id "myCanvas". But if
+there's no element by that name in the DOM, we'll get back `null`, so we use
+`Option` to encode that. Next, what `getElementById` returns us is a `HTMLElement`.
+
+So our next step is to make sure we're in fact dealing with a canvas element,
+using `instanceOf(HTMLCanvasElement)`. But here's the trick: that call to filter
+will not only make sure that we are dealing with a canvas element, but also
+change the type of the Option.. After the call, typescript we'll know that we're
+dealing with an `Option<HTMLCanvasElement>`, not anymore an `Option<HTMLElement>`!
+That's the magic of type guards.
 
 ## Use in `partition` and conditional types
 
