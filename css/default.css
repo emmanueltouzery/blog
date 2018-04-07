@@ -3,11 +3,12 @@ html {
 }
 
 body {
-    color: #333333;
+    color: #000000;
     font-size: 0.9rem;
     margin: 0px auto 0px auto;
     width: 780px;
-    font-family: "Roboto",Helvetica,sans-serif
+    font-family: "Roboto",Helvetica,sans-serif;
+    line-height: 1.4;
 
     /* 'Merriweather Sans', sans-serif; */
 }

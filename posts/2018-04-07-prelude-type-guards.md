@@ -149,9 +149,9 @@ standard library, on `Array`, and also in prelude.ts's collections of course) on
 for instance.
 
 ```java
-Vector.of(Option.of(2),Option.none<number>(), Option.of(3))
+Vector.of(Option.of(2), Option.none<number>(), Option.of(3))
     .filter(Option.isSome)
-// => Vector.of(Option.of(2),Option.of(3)) of type Vector<Some<number>>
+// => Vector.of(Option.of(2), Option.of(3)) of type Vector<Some<number>>
 ```
 
 So we take a vector of three options, two `Some` and one `None`. And then we filter the
