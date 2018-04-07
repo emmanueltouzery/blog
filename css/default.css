@@ -165,7 +165,7 @@ div.withborder td {
     padding: 10px;
 }
 
-span.tech-tag {
+div.tags a {
     background-color: #E1ECF4;
     color: #39739d;
     padding: 0.3rem 0.4rem;

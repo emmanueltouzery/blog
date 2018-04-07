@@ -3,9 +3,6 @@ title: My experience teaching my kids some programming
 author: emmanuel
 tags: racket, lisp, functional-programming
 ---
-<span class="tech-tag">racket</span>
-<span class="tech-tag">lisp</span>
-<span class="tech-tag">functional-programming</span>
 
 As a professional software developer, and with my older daughter Lara being 11 years
 old, and the second one Kristina 8, I figured it made sense to spend some time trying

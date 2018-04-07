@@ -2,6 +2,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           Data.Monoid
 import           Hakyll
+import           Data.List
+import           Text.Blaze.Html (toHtml, toValue, (!))
+import qualified Text.Blaze.Html5 as H
+import qualified Text.Blaze.Html5.Attributes as A
 
 
 --------------------------------------------------------------------------------
@@ -23,7 +27,20 @@ main = hakyll $ do
 
     -- build up tags
     tags <- buildTags "posts/*" (fromCapture "tags/*.html")
-    print tags
+
+    tagsRules tags $ \tag pattern -> do
+        let title = "Posts tagged \"" ++ tag ++ "\""
+        route idRoute
+        compile $ do
+            posts <- recentFirst =<< loadAll pattern
+            let ctx = constField "title" title
+                      `mappend` listField "posts" postCtx (return posts)
+                      `mappend` defaultContext
+
+            makeItem ""
+                >>= loadAndApplyTemplate "templates/tag.html" ctx
+                >>= loadAndApplyTemplate "templates/default.html" ctx
+                >>= relativizeUrls
 
     match "posts/*" $ do
         route $ setExtension "html"
@@ -45,21 +62,6 @@ main = hakyll $ do
                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                 >>= relativizeUrls
-
-    create ["prelude.html"] $ do
-        route idRoute
-        compile $ do
-            posts <- recentFirst =<< loadAll "posts/*-prelude-*"
-            let preludeCtx =
-                    listField "posts" postCtx (return posts) <>
-                    constField "title" "Prelude.ts posts"    <>
-                    defaultContext
-
-            makeItem ""
-                >>= loadAndApplyTemplate "templates/prelude.html" preludeCtx
-                >>= loadAndApplyTemplate "templates/default.html" preludeCtx
-                >>= relativizeUrls
-
 
     match "index.html" $ do
         route idRoute
@@ -85,4 +87,16 @@ postCtx =
     defaultContext
 
 postCtxWithTags :: Tags -> Context String
-postCtxWithTags tags = tagsField "tags" tags `mappend` postCtx
+postCtxWithTags tags = tagsFieldSpace "tags" tags `mappend` postCtx
+  
+-- | Render tags with links separated by spaces
+tagsFieldSpace :: String     -- ^ Destination key
+               -> Tags       -- ^ Tags
+               -> Context a  -- ^ Context
+tagsFieldSpace = tagsFieldWith getTags simpleRenderLink (mconcat . intersperse " ")
+
+-- | Render one tag link
+simpleRenderLink :: String -> (Maybe FilePath) -> Maybe H.Html
+simpleRenderLink _   Nothing         = Nothing
+simpleRenderLink tag (Just filePath) =
+  Just $ H.a ! A.href (toValue $ toUrl filePath) $ toHtml tag

@@ -1,11 +1,8 @@
 ---
 title: Prelude.ts - pattern matching, type guards and conditional types
 author: emmanuel
-tags: prelude.ts typescript, functional-programming
+tags: prelude.ts, typescript, functional-programming
 ---
-<span class="tech-tag">prelude.ts</span>
-<span class="tech-tag">typescript</span>
-<span class="tech-tag">functional-programming</span>
 
 One of the hallmarks of functional programming is pattern matching.
 [For now](https://github.com/tc39/proposal-pattern-matching), javascript doesn't
