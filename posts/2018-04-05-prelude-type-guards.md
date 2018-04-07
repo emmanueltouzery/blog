@@ -6,7 +6,7 @@ author: emmanuel
 <span class="tech-tag">typescript</span>
 <span class="tech-tag">functional-programming</span>
 
-One of the hallmarks of functional programming is pattern matching. 
+One of the hallmarks of functional programming is pattern matching.
 [For now](https://github.com/tc39/proposal-pattern-matching), javascript doesn't
 offer special syntax to achieve it, and therefore also typescript doesn't.
 
@@ -22,7 +22,10 @@ Prelude tackles the issue from two point of views:
 
 ## What are type guards
 
-To begin with, predicates are functions returning booleans. For instance:
+### Predicates
+
+To begin with, predicates are functions returning booleans. For instance,
+this implementation of `isPositive` is a predicate:
 
     function isPositive(x: number): boolean { return x >= 0; }
 
@@ -31,19 +34,25 @@ seen as special kinds of booleans. Type guards live purely in the type world
 and have no effect on the runtime at all. You can use type guard to convince
 that code that you know is correct is in fact correct.
 
-## Problem to solve
+### Problem to solve
 
-We use either inheritance or discriminated unions. For instance:
+Let's say we use either inheritance or discriminated unions. For instance:
 
+    class Some<T> {}
+    class None<T> {}
     type Option<T> = Some<T> | None<T>;
-    
-If you use typescript, that means that you care about safety and the ability
-to reason about your code. An `Option` is a value which is either present, or
-not present. For instance:
+
+or:
+
+    abstract class Option<T> {}
+    class Some<T> extends Option<T> {}
+    class None<T> extends Option<T> {}
+
+An `Option` is a value which is either present, or not present. For instance:
 
     Option.of(5)          // value is present
     Option.none<number>() // value is not present
-    
+
 Trying to read the value of an empty option makes no sense. For that reason,
 prelude offers two ways to read the value of an Option: `Some.get` and
 `Option.getOrThrow`. The latter is available on both `Some` and `None`, but
@@ -52,8 +61,14 @@ prelude offers two ways to read the value of an Option: `Some.get` and
 So if you've convinced the compiler that all your uses of the option are safe,
 then you should always use `get` or (maybe `getOrElse`), but never `getOrThrow`.
 
-So now if we are given an `Option<T>`, and we need to do something in case it's
-a `Some`, and something else in case it's a `None`, what can we do?
+So, if we did offer a function `isSome(): boolean`, you could do:
+
+    if (option.isSome()) {
+        console.log((<Some<number>>option).get());
+    }
+
+That's right, we must cast to Some, how would the compiler know for sure that we are
+in fact dealing with a Some?
 
 For that purpose, typescript supports [flow control analysis](https://blog.mariusschulz.com/2016/09/30/typescript-2-0-control-flow-based-type-analysis)
 when [type guards](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types)
@@ -61,6 +76,13 @@ are present.
 
 In prelude, both `Some` and `None` offer a `isSome` and a `isNone` method. But
 instead of returning boolean, they return `x is Some<T>` and `x is None<T>`.
+
+    class Some<T> {
+        isSome(): this is Some<T> { return true; }
+    }
+    class None<T> {
+        isSome(): this is Some<T> { return false; }
+    }
 
 ## Use in `if`
 
@@ -73,9 +95,20 @@ Using this, we can do:
         // here myOption has type None<number>
     }
 
-That's already awesome, but we're just getting started!
+Careful though. We'll get the `None` type in the `else` branch only if we use
+the `type Option<T> = Some<T> | None<T>` and NOT if we use the inheritance form
+(abstract class `Option`, and `Some` and `None` extending it). The reason is that
+inheritance is an "open" relationship: you can add at any time a third class which
+would inherit from `Option` and so the typescript compiler cannot say for sure that
+if the type is not `Some`, that it then must be `None`. But if we say quite
+literally that `Option=Some|None` instead of using inheritance, then the compiler
+can do that.
 
-Note that prelude.ts offers a less advanced, but also pretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match)
+So, no more casts in our `if` and `else`. That's already awesome, but we're just
+getting started!
+
+Before we move on further with type guards, note that talking about the `Option`
+case in particular, prelude.ts also offers a lpretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match)
 method on Option, enabling to do:
 
     Option.of(5).match({
@@ -83,30 +116,40 @@ method on Option, enabling to do:
         None: () => "got nothing!"
     });
     // => "got 5"
-    
+
+Ok, now back to type guards!
+
 ## Use in `filter`
 
-But to get back to type guards, they are also applied (even in the typescript
-standard library, on Array, and also on prelude.ts's collections) on `filter` 
+Besides "simple" cases like `if` statements, type guards are also applied (even in the typescript
+standard library, on `Array`, and also on prelude.ts's collections) on `filter`
 for instance.
 
     Vector.of(Option.of(2),Option.none<number>(), Option.of(3)).filter(Option.isSome)
     // => Vector.of(Option.of(2),Option.of(3)) of type Vector<Some<number>>
-    
+
 Notice that the type of the result is not anymore `Vector<Option<number>>` but
 `Vector<Some<number>>`.
 
-Prelude.ts also offers [typeOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#typeof) 
+Prelude.ts also offers [typeOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#typeof)
 and [instanceOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#instanceof)
 helpers, so that we can do:
 
     Vector.of<number|string>(1,"a",2,3,"b").filter(typeOf("number"))
     // => Vector.of<number>(1,2,3)
 
-Notice that the type of the result is not anymore `Vector<number|string>` but
-`Vector<number>`.
+Note that the type of the result is not anymore `Vector<number|string>` but
+`Vector<number>`. This is possible because of the type signature of `filter`:
 
-## Use in `partition`
+    filter<U extends T>(fn:(v:T)=>v is U): Collection<U>;
+    filter(predicate:(v:T)=>boolean): Collection<T>;
+
+As you can see, the type signature is overloaded. The first, more precise,
+definition, accepts only type guards and returns collections with another type
+(`U`, which must extend `T`). While the second, catch-all type, accepts plain
+booleans, and returns a collection of the same type `T` as the input.
+
+## Use in `partition` and conditional types
 
 [partition](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/vector.html#partition)
 is a pretty traditional FP function. It allows you to split a collection in two
@@ -126,17 +169,29 @@ Using typescript 2.8.1 and less, the best that we can achieve in prelude.ts is:
     // => [Vector.of<number>(1,2,3), Vector.of<number,string>("a","b")]
 
 As you can see, the compiler is smart enough to understand that the first
-sublist returned by `partition` will contain only `number` elements. But it's
-complicated to explain to it that the second sublist will contain only `string`
-elements... In effect we have to tell the compiler that the type of the second
+sublist returned by `partition` will contain only `number` elements.
+That is because the definition of `partition` takes advantage of type guards:
+
+
+    partition<U extends T>(predicate:(x:T)=> x is U): [Collection<U>,Collection<T>];
+    partition(predicate:(x:T)=>boolean): [Collection<T>,Collection<T>];
+
+Again we see an overloaded definition. If the parameter is a type guard, then
+instead of returning `Collection<T>`, we can return `Collection<U>` for the first
+sublist.
+
+But if we return to our example, it's complicated to express in types that the
+second sublist will contain only `string` elements...
+In effect we have to tell the compiler that the type of the second
 sublist is the type of the input collection, _minus_ the type that we keep for
 the first sublist. Type subtraction? Sounds impossible to express right?
 
 Except that [typescript 2.8.1](https://blogs.msdn.microsoft.com/typescript/2018/03/27/announcing-typescript-2-8/)
 has added [conditional types](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html).
-There is actually a bug in 2.8.1 (which is the latest version of typescript as
-I'm writing) which prevents prelude.ts from taking advantage of the feature,
-but 2.8.2 will have the fix, and that lets us get:
+There is actually [a bug](https://github.com/Microsoft/TypeScript/issues/22860)
+in 2.8.1 (which is the latest version of typescript as
+I'm writing this blog) which prevents prelude.ts from taking advantage of the
+feature, but 2.8.2 will have the fix, and that lets us get:
 
 
     Vector.of<number|string>(1,"a",2,3,"b").partition(typeOf("number"))
@@ -161,7 +216,6 @@ For instance:
   the type guard for LinkedList is `isEmpty`
 * `Stream` can be a `ConsStream` or an `EmptyStream`. It behaves the same as
   `LinkedList` in that regard.
-* `Either` can be a `Left` or a `Right`. Left has the extra Left.getLeft method 
-   that Right doesn't have. Right has the extra Right.get method that Left 
+* `Either` can be a `Left` or a `Right`. Left has the extra Left.getLeft method
+   that Right doesn't have. Right has the extra Right.get method that Left
    doesn't have. The type guard is `isRight`.
-  
