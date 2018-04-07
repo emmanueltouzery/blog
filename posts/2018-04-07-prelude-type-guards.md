@@ -43,7 +43,8 @@ class Some<T> extends Option<T> {}
 class None<T> extends Option<T> {}
 ```
 
-An `Option` is a value which is either present, or not present. For instance:
+An `Option` is a value which is either present (the option is a `Some`),
+or not present (the option is a `None`). For instance:
 
 ```java
 Option.of(5)          // value is present, dynamic type is Some<number>
@@ -127,7 +128,8 @@ So, no more casts in our `if` and `else`, and less unsafe `getOrThrow` calls.
 That's already awesome, but we're just getting started!
 
 Before we move on further with type guards, note that about the `Option`
-case in particular, prelude.ts also offers a pretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match)
+case in particular, let me mention that prelude.ts also offers a
+pretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match)
 method on Option, enabling to do:
 
 ```java
@@ -156,7 +158,7 @@ So we take a vector of three options, two `Some` and one `None`. And then we fil
 collection to keep only `Some`s. The collection is properly filtered, but note that the
 type of the result is not anymore `Vector<Option<number>>` but
 `Vector<Some<number>>`: typescript realized that since we filtered by a type guard,
-the generic type of the result collection must a `Some`.
+the generic type of the result collection must be a `Some`.
 
 Prelude.ts also offers [typeOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#typeof)
 and [instanceOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#instanceof)
@@ -337,14 +339,14 @@ So, let's try to resolve `Exclude<string|number|boolean, number>`:
 And that's exactly what the typescript compiler is doing behind the scenes!
 
 This improved `partition` is currently implemented in a branch in prelude.ts,
-and we'll merge it to master when typescript 2.8.2 is released.
+to be merged to master when typescript 2.8.2 is released.
 
 ## Beyond `Option`
 
 We've talked about discriminated types and type guards in prelude.ts for `Option`.
 But this pattern is applied in a number of contexts in prelude.ts, beyond the case of Option.
 
-For instance:
+We have:
 
 * [LinkedList](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/linkedlist.html)
   can be `ConsLinkedList` (non empty) or `EmptyLinkedList`. On `ConsLinkedList`,
@@ -363,7 +365,7 @@ For instance:
    
 To take an example with linked list, this means that we can do:
 
-```javascript
+```java
 if (!myLinkedList.isEmpty()) {
     return myLinkedList.last().get();
 }
@@ -372,7 +374,7 @@ if (!myLinkedList.isEmpty()) {
 While for instance `Vector` doesn't have the feature (it has other very
 important advantages though), and on vector we must do:
 
-```javascript
+```java
 if (!myVector.isEmpty()) {
     return myVector.last().getOrThrow();
 }
@@ -383,6 +385,15 @@ the type of `myLinkedList` is not anymore `LinkedList<T>` but `ConsLinkedList<T>
 Which means that we know that the list contains at least one element. Therefore
 `last` doesn't return `Option<T>` but `Some<T>` (and the same holds for `head`),
 and so we can call `Some.get` instead of the basic `Option.getOrThrow`.
+
+## Takeaway
+
+Type guards and conditional types allow us to give more information to the type
+checker so that the compiler can infer a more precise static type for values,
+letting us write safer programs. These mechanisms, like all type-level mechanisms
+in typescript, have no effect at runtime, they only allow us to express to
+the compiler type-level reasonings that the developer would otherwise do mentally:
+now they can be double-checked and made explicit by the machine.
 
 That's it for today! You can learn more about my typescript functional library prelude.ts
 through its [website](https://github.com/emmanueltouzery/prelude.ts), [user guide](https://github.com/emmanueltouzery/prelude.ts/wiki/Prelude.ts-user-guide) 
