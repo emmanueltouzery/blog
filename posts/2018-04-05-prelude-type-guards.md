@@ -216,6 +216,8 @@ which expresses exactly what we want to say: `T` is the "base type", `U` is the
 Besides `Exclude`, typescript 2.8 [adds a number of such predefined conditional types](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types):
 `Extract`, `NonNullable`, `ReturnType`, `InstanceType`.
 
+## More about conditional types
+
 It is very satisfying to understand that these predefined conditional types are
 not each hardcoded in the compiler. The only mechanism known to the compiler is
 the ability to say that `T extends U ? X : Y`. Everything else is built upon that,
