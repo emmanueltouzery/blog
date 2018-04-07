@@ -16,6 +16,11 @@ a:link {color:#326891; text-decoration:none;}
 a:visited {color:#326891; text-decoration:none;}
 a:hover {color:#326891; text-decoration:none;}
 
+div.sourceCode {
+    padding: 5px;
+    background-color: #f6f8fa;
+}
+
 code, .sourceCode {
     font-family: 'Roboto Mono', monospace;
     font-size: 0.9rem;
