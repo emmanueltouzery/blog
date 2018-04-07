@@ -350,7 +350,29 @@ For instance:
    that Right doesn't have. Right has the extra `Right.get` method that Left
    doesn't have. Both branches have `getLeftOrThrow` and `getOrThrow` (plus
    `orElse` variants). The type guard is `isRight`.
+   
+To take an example with linked list, this means that we can do:
 
-You can learn more about my typescript functional library [prelude.ts](https://github.com/emmanueltouzery/prelude.ts)
-through its website, [user guide](https://github.com/emmanueltouzery/prelude.ts/wiki/Prelude.ts-user-guide) 
+```javascript
+if (!myLinkedList.isEmpty()) {
+    return myLinkedList.last().get();
+}
+```
+
+While for instance `Vector` doesn't have the feature (it has other very
+important advantages though), and on vector we must do:
+
+```javascript
+if (!myVector.isEmpty()) {
+    return myVector.last().getOrThrow();
+}
+```
+
+What's happening in the linked list example is that inside the `if`,
+the type of `myLinkedList` is not anymore `LinkedList<T>` but `ConsLinkedList<T>`.
+Which means that we know that the list contains at least one element. Therefore
+`last` doesn't return `Option<T>` but `Some<T>` (and the same holds for `head`).
+
+You can learn more about my typescript functional library prelude.ts
+through its [website](https://github.com/emmanueltouzery/prelude.ts), [user guide](https://github.com/emmanueltouzery/prelude.ts/wiki/Prelude.ts-user-guide) 
 and [apidocs](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/globals.html).
