@@ -32,7 +32,7 @@ this implementation of `isPositive` is a predicate:
 Type guards, then, are special types of predicates. What they return can be
 seen as special kinds of booleans. Type guards live purely in the type world
 and have no effect on the runtime at all. You can use type guard to convince
-that code that you know is correct is in fact correct.
+the compiler that code that you know is correct is in fact correct.
 
 ### Problem to solve
 
@@ -50,16 +50,18 @@ or:
 
 An `Option` is a value which is either present, or not present. For instance:
 
-    Option.of(5)          // value is present
-    Option.none<number>() // value is not present
+    Option.of(5)          // value is present, dynamic type is Some<number>
+    Option.none<number>() // value is not present, dynamic type is None<number>
 
 Trying to read the value of an empty option makes no sense. For that reason,
 prelude offers two ways to read the value of an Option: `Some.get` and
 `Option.getOrThrow`. The latter is available on both `Some` and `None`, but
-`get` is available only on `Some`.
+`get` is available only on `Some`. Calling `getOrThrow` on a `Some` will return
+the value, but it will throw if called on a `None`.
 
 So if you've convinced the compiler that all your uses of the option are safe,
-then you should always use `get` or (maybe `getOrElse`), but never `getOrThrow`.
+then you should always use `get` (or maybe [getOrElse](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#getorelse)),
+but never `getOrThrow`.
 
 So, if we did offer a function `isSome(): boolean`, you could do:
 
@@ -122,7 +124,7 @@ Ok, now back to type guards!
 ## Use in `filter`
 
 Besides "simple" cases like `if` statements, type guards are also applied (even in the typescript
-standard library, on `Array`, and also on prelude.ts's collections) on `filter`
+standard library, on `Array`, and also on prelude.ts's collections of course) on `filter`
 for instance.
 
     Vector.of(Option.of(2),Option.none<number>(), Option.of(3)).filter(Option.isSome)
@@ -163,10 +165,10 @@ may or may not have succeeded, and you would like to split that list in two list
 one for all the successes, and one for all the failures. But there are plenty of
 use-cases.
 
-Using typescript 2.8.1 and less, the best that we can achieve in prelude.ts is:
+Using typescript 2.8.1 and older, the best that we can achieve in prelude.ts is:
 
     Vector.of<number|string>(1,"a",2,3,"b").partition(typeOf("number"))
-    // => [Vector.of<number>(1,2,3), Vector.of<number,string>("a","b")]
+    // => [Vector.of<number>(1,2,3), Vector.of<number|string>("a","b")]
 
 As you can see, the compiler is smart enough to understand that the first
 sublist returned by `partition` will contain only `number` elements.
@@ -180,10 +182,10 @@ Again we see an overloaded definition. If the parameter is a type guard, then
 instead of returning `Collection<T>`, we can return `Collection<U>` for the first
 sublist.
 
-But if we return to our example, it's complicated to express in types that the
+But if we return to our example, it's tricky to express in types that the
 second sublist will contain only `string` elements...
 In effect we have to tell the compiler that the type of the second
-sublist is the type of the input collection, _minus_ the type that we keep for
+sublist is the generic type of the input collection, _minus_ the type that we keep for
 the first sublist. Type subtraction? Sounds impossible to express right?
 
 Except that [typescript 2.8.1](https://blogs.msdn.microsoft.com/typescript/2018/03/27/announcing-typescript-2-8/)
@@ -191,7 +193,7 @@ has added [conditional types](https://www.typescriptlang.org/docs/handbook/relea
 There is actually [a bug](https://github.com/Microsoft/TypeScript/issues/22860)
 in 2.8.1 (which is the latest version of typescript as
 I'm writing this blog) which prevents prelude.ts from taking advantage of the
-feature, but 2.8.2 will have the fix, and that lets us get:
+feature, but 2.8.2 will have the fix, and that lets us achieve this:
 
 
     Vector.of<number|string>(1,"a",2,3,"b").partition(typeOf("number"))
@@ -260,17 +262,18 @@ And that's exactly what the typescript compiler is doing behind the scenes!
 ## Beyond `Option`
 
 We've talked about discriminated types and type guards in prelude.ts for `Option`.
-But this pattern repeats in many locations in prelude.ts, beyond the case of Option.
+But this pattern is applied in a number of contexts in prelude.ts, beyond the case of Option.
 
 For instance:
 
 * `LinkedList` can be `ConsLinkedList` or `EmptyLinkedList`. On `ConsLinkedList`,
   [head](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/linkedlist.conslinkedlist.html#head)
   and [last](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/linkedlist.conslinkedlist.html#last)
-  return a `Some` instead of a simple `Option` like `EmptyLinkedList` does. And
-  the type guard for LinkedList is `isEmpty`
+  return a `Some` instead of a simple `Option`, and these methods return a
+  `None`. And the type guard for LinkedList is `isEmpty`;
 * `Stream` can be a `ConsStream` or an `EmptyStream`. It behaves the same as
-  `LinkedList` in that regard.
-* `Either` can be a `Left` or a `Right`. Left has the extra Left.getLeft method
-   that Right doesn't have. Right has the extra Right.get method that Left
-   doesn't have. The type guard is `isRight`.
+  `LinkedList` with type guards;
+* `Either` can be a `Left` or a `Right`. Left has the extra `Left.getLeft` method
+   that Right doesn't have. Right has the extra `Right.get` method that Left
+   doesn't have. Both branches have `getLeftOrThrow` and `getOrThrow` (plus
+   `orElse` variants). The type guard is `isRight`.
