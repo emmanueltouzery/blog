@@ -266,14 +266,17 @@ But this pattern is applied in a number of contexts in prelude.ts, beyond the ca
 
 For instance:
 
-* `LinkedList` can be `ConsLinkedList` or `EmptyLinkedList`. On `ConsLinkedList`,
+* [LinkedList](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/linkedlist.html)
+  can be `ConsLinkedList` or `EmptyLinkedList`. On `ConsLinkedList`,
   [head](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/linkedlist.conslinkedlist.html#head)
   and [last](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/linkedlist.conslinkedlist.html#last)
   return a `Some` instead of a simple `Option`, and these methods return a
   `None`. And the type guard for LinkedList is `isEmpty`;
-* `Stream` can be a `ConsStream` or an `EmptyStream`. It behaves the same as
+*  [Stream](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/stream.html) 
+   can be a `ConsStream` or an `EmptyStream`. It behaves the same as
   `LinkedList` with type guards;
-* `Either` can be a `Left` or a `Right`. Left has the extra `Left.getLeft` method
+*  [Either](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/either.html)
+   can be a `Left` or a `Right`. Left has the extra `Left.getLeft` method
    that Right doesn't have. Right has the extra `Right.get` method that Left
    doesn't have. Both branches have `getLeftOrThrow` and `getOrThrow` (plus
    `orElse` variants). The type guard is `isRight`.
