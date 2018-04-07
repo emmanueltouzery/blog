@@ -202,6 +202,61 @@ Or even:
     Vector.of<number|string|boolean>(1,"a",2,3,"b",true).partition(typeOf("number"))
     // => [Vector.of<number>(1,2,3), Vector.of<string|boolean>("a","b",true)]
 
+The new type signature that we need to achieve that is now:
+
+
+    partition<U extends T>(predicate:(v:T)=>v is U): [Collection<U>,Collection<Exclude<T,U>>];
+    partition(predicate:(x:T)=>boolean): [Collection<T>,Collection<T>];
+
+Notice that the generic type for the second sublist in the result is `Exclude<T,U>`,
+which expresses exactly what we want to say: `T` is the "base type", `U` is the
+"more specific" type, give me the types left if you consider all the types matching
+`T`, _minus_ the specific type `U`.
+
+Besides `Exclude`, typescript 2.8 [adds a number of such predefined conditional types](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types):
+`Extract`, `NonNullable`, `ReturnType`, `InstanceType`.
+
+It is very satisfying to understand that these predefined conditional types are
+not each hardcoded in the compiler. The only mechanism known to the compiler is
+the ability to say that `T extends U ? X : Y`. Everything else is built upon that,
+and the fact that conditional types are distributive. So if we follow the specific
+example of `Exclude`.. Its implementation is:
+
+    /**
+     * Exclude from T those types that are assignable to U
+     */
+    type Exclude<T, U> = T extends U ? never : T;
+
+The typescript handbook explains the distributiveness aspect like this:
+
+> Distributive conditional types are automatically distributed over union types
+> during instantiation. For example, an instantiation of
+>
+>     T extends U ? X : Y
+>
+> with the type argument `A | B | C` for `T` is resolved as
+>
+>     (A extends U ? X : Y) | (B extends U ? X : Y) | (C extends U ? X : Y).
+
+So, let's try to resolve `Exclude<string|number|boolean, number>`:
+
+    1. Exclude<string|number|boolean, number>
+
+    2. string extends number ? never : string
+     | number extends number ? never : number
+     | boolean extends number ? never : boolean
+
+    3. false ? never : string
+     | true ? never : number
+     | false ? never : boolean
+
+    4. string | never | boolean
+
+    5. string | boolean
+
+And that's exactly what the typescript compiler is doing behind the scenes!
+
+
 ## Beyond `Option`
 
 We've talked about discriminated types and type guards in prelude.ts for `Option`.
