@@ -47,7 +47,7 @@ An `Option` is a value which is either present (the option is a `Some`),
 or not present (the option is a `None`). For instance:
 
 ```java
-Option.of(5)          // value is present, dynamic type is Some<number>
+Option.of(5)          // value is present (it's 5), dynamic type is Some<number>
 Option.none<number>() // value is not present, dynamic type is None<number>
 ```
 
