@@ -17,8 +17,8 @@ a:link {color:#326891; text-decoration:none;}
 a:visited {color:#326891; text-decoration:none;}
 a:hover {color:#326891; text-decoration:none;}
 
-div.sourceCode {
-    padding: 5px;
+div.sourceCode pre {
+    padding: 15px;
     background-color: #f6f8fa;
 }
 
