@@ -3,8 +3,8 @@ html {
 }
 
 body {
-    color: black;
-    font-size: 1rem;
+    color: #333333;
+    font-size: 0.9rem;
     margin: 0px auto 0px auto;
     width: 780px;
     font-family: "Roboto",Helvetica,sans-serif
@@ -23,7 +23,8 @@ div.sourceCode {
 
 code, .sourceCode {
     font-family: 'Roboto Mono', monospace;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    background-color: #f6f8fa;
 }
 
 div#header {
