@@ -1,6 +1,7 @@
 ---
 title: My experience teaching my kids some programming
 author: emmanuel
+tags: racket, lisp, functional-programming
 ---
 <span class="tech-tag">racket</span>
 <span class="tech-tag">lisp</span>

@@ -1,6 +1,7 @@
 ---
 title: Prelude.ts - pattern matching, type guards and conditional types
 author: emmanuel
+tags: prelude.ts typescript, functional-programming
 ---
 <span class="tech-tag">prelude.ts</span>
 <span class="tech-tag">typescript</span>
