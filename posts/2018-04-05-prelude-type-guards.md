@@ -275,3 +275,7 @@ For instance:
    that Right doesn't have. Right has the extra `Right.get` method that Left
    doesn't have. Both branches have `getLeftOrThrow` and `getOrThrow` (plus
    `orElse` variants). The type guard is `isRight`.
+
+You can learn more about my typescript functional library [prelude.ts](https://github.com/emmanueltouzery/prelude.ts)
+through its website, [user guide](https://github.com/emmanueltouzery/prelude.ts/wiki/Prelude.ts-user-guide) 
+and [apidocs](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/globals.html).
