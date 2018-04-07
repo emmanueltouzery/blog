@@ -6,14 +6,15 @@ tags: prelude.ts, typescript, functional-programming
 
 This post describes how the [prelude.ts](https://github.com/emmanueltouzery/prelude.ts)
 functional programming library takes advantage of typescript type guards and
-conditional types.
+conditional types. It can also serve as an introduction to these typescript
+features in a more general context.
 
 ## What are type guards
 
 ### Predicates
 
-To begin with, predicates are functions returning booleans. For instance,
-this implementation of `isPositive` is a predicate:
+Let's first define predicates: predicates are functions returning booleans. For instance,
+`isPositive` is a predicate:
 
 ```java
 function isPositive(x: number): boolean { return x >= 0; }
@@ -55,9 +56,14 @@ prelude offers two ways to read the value of an Option: `Some.get` and
 `get` is available only on `Some`. Calling `getOrThrow` on a `Some` will return
 the value, but it will throw if called on a `None`.
 
-So if you've convinced the compiler that all your uses of the option are safe,
-then you should always use `get` (or maybe [getOrElse](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#getorelse)),
-but never `getOrThrow`.
+```java
+myOption.getOrThrow() // will get the value or throw if it was a None
+mySome.get()          // will compile only if mySome is a Some
+```
+
+So you should try to convince the compiler that all your uses of options are safe,
+so that you can use `get` (or maybe [getOrElse](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#getorelse)),
+but avoid `getOrThrow`.
 
 So, if we did offer a function `isSome(): boolean`, you could do:
 
@@ -70,7 +76,8 @@ if (option.isSome()) {
 ```
 
 That's right, we must cast to `Some`, how would the compiler know for sure that we are
-in fact dealing with a Some?
+in fact dealing with a Some? We can see the `if`, but the compiler doesn't know it's
+relevant if we don't tell it.
 
 For that purpose, typescript supports [flow control analysis](https://blog.mariusschulz.com/2016/09/30/typescript-2-0-control-flow-based-type-analysis)
 when [type guards](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types)
@@ -104,8 +111,8 @@ if (myOption.isSome()) {
 ```
 
 So the static type of the variable as seen by the compiler will depend on the
-context in which the variable is used. It is flow analysis (pioneered by Facebook's
-[flow](https://github.com/facebook/flow)).
+context in which the variable is used. It is flow analysis (pioneered by [Facebook's
+flow](https://github.com/facebook/flow)).
 
 Careful though. We'll get the `None` type in the `else` branch only if we use
 the `type Option<T> = Some<T> | None<T>` and NOT if we use the inheritance form
@@ -131,7 +138,7 @@ Option.of(5).match({
 // => "got 5"
 ```
 
-Note that `match` is the catamorphism for `Option`. But now, back to type guards!
+`match` is the catamorphism for `Option`. But now, back to type guards!
 
 ## Use in `filter`
 
@@ -186,12 +193,13 @@ const canvas = Option.ofNullable(document.getElementById("myCanvas"))
 Keep in mind that also Option offers a `filter` method. So what we do here,
 is that we lookup an html element in the DOM, by the id "myCanvas". But if
 there's no element by that name in the DOM, we'll get back `null`, so we use
-`Option` to encode that. Next, what `getElementById` returns us is a `HTMLElement`.
+`Option` to encode that. Also note that `getElementById` returns us a `HTMLElement`.
 
 So our next step is to make sure we're in fact dealing with a canvas element,
 using `instanceOf(HTMLCanvasElement)`. But here's the trick: that call to filter
-will not only make sure that we are dealing with a canvas element, but also
-change the type of the Option.. After the call, typescript we'll know that we're
+will not only make sure that we are dealing with a canvas element (if not we'll
+get a `None` after the filter), but also change the type of the Option.. 
+After the call, typescript we'll know that we're
 dealing with an `Option<HTMLCanvasElement>`, not anymore an `Option<HTMLElement>`!
 That's the magic of type guards.
 
@@ -226,11 +234,13 @@ That is because the definition of `partition` takes advantage of type guards:
 
 
 ```java
-partition<U extends T>(predicate:(x:T)=> x is U): [Collection<U>,Collection<T>];
-partition(predicate:(x:T)=>boolean): [Collection<T>,Collection<T>];
+class Collection<T> {
+    partition<U extends T>(predicate:(x:T)=> x is U): [Collection<U>,Collection<T>];
+    partition(predicate:(x:T)=>boolean): [Collection<T>,Collection<T>];
+}
 ```
 
-Again we see an overloaded definition. If the parameter is a type guard, then
+Again we have an overloaded definition. If the parameter is a type guard, then
 instead of returning `Collection<T>`, we can return `Collection<U>` for the first
 sublist.
 
@@ -287,7 +297,7 @@ not each hardcoded in the compiler. The "only" mechanism known to the compiler i
 the ability to express conditions on types, compute a type based on other types
 and a condition like `T extends U ? X : Y`.
 
-Everything else is built upon that, and the fact that conditional types are distributive. 
+Everything else is built upon that and the fact that conditional types are distributive. 
 So if we follow the specific example of `Exclude`.. Its definition is:
 
 ```javascript
@@ -337,10 +347,10 @@ But this pattern is applied in a number of contexts in prelude.ts, beyond the ca
 For instance:
 
 * [LinkedList](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/linkedlist.html)
-  can be `ConsLinkedList` or `EmptyLinkedList`. On `ConsLinkedList`,
+  can be `ConsLinkedList` (non empty) or `EmptyLinkedList`. On `ConsLinkedList`,
   [head](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/linkedlist.conslinkedlist.html#head)
   and [last](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/linkedlist.conslinkedlist.html#last)
-  return a `Some` instead of a simple `Option`, and these methods return a
+  return a `Some` instead of a simple `Option`, and on `EmptyLinkedList` these methods return a
   `None`. And the type guard for LinkedList is `isEmpty`;
 *  [Stream](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/stream.html) 
    can be a `ConsStream` or an `EmptyStream`. It behaves the same as
@@ -373,6 +383,6 @@ the type of `myLinkedList` is not anymore `LinkedList<T>` but `ConsLinkedList<T>
 Which means that we know that the list contains at least one element. Therefore
 `last` doesn't return `Option<T>` but `Some<T>` (and the same holds for `head`).
 
-You can learn more about my typescript functional library prelude.ts
+That's it for today! You can learn more about my typescript functional library prelude.ts
 through its [website](https://github.com/emmanueltouzery/prelude.ts), [user guide](https://github.com/emmanueltouzery/prelude.ts/wiki/Prelude.ts-user-guide) 
 and [apidocs](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/globals.html).
