@@ -25,7 +25,9 @@ Prelude tackles the issue from two point of views:
 To begin with, predicates are functions returning booleans. For instance,
 this implementation of `isPositive` is a predicate:
 
-    function isPositive(x: number): boolean { return x >= 0; }
+```java
+function isPositive(x: number): boolean { return x >= 0; }
+```
 
 Type guards, then, are special types of predicates. What they return can be
 seen as special kinds of booleans. Type guards live purely in the type world
@@ -36,20 +38,26 @@ the compiler that code that you know is correct is in fact correct.
 
 Let's say we use either inheritance or discriminated unions. For instance:
 
-    class Some<T> {}
-    class None<T> {}
-    type Option<T> = Some<T> | None<T>;
+```haskell
+class Some<T> {}
+class None<T> {}
+type Option<T> = Some<T> | None<T>;
+```
 
 or:
 
-    abstract class Option<T> {}
-    class Some<T> extends Option<T> {}
-    class None<T> extends Option<T> {}
+```haskell
+abstract class Option<T> {}
+class Some<T> extends Option<T> {}
+class None<T> extends Option<T> {}
+```
 
 An `Option` is a value which is either present, or not present. For instance:
 
-    Option.of(5)          // value is present, dynamic type is Some<number>
-    Option.none<number>() // value is not present, dynamic type is None<number>
+```java
+Option.of(5)          // value is present, dynamic type is Some<number>
+Option.none<number>() // value is not present, dynamic type is None<number>
+```
 
 Trying to read the value of an empty option makes no sense. For that reason,
 prelude offers two ways to read the value of an Option: `Some.get` and
@@ -63,9 +71,11 @@ but never `getOrThrow`.
 
 So, if we did offer a function `isSome(): boolean`, you could do:
 
-    if (option.isSome()) {
-        console.log((<Some<number>>option).get());
-    }
+```java
+if (option.isSome()) {
+    console.log((<Some<number>>option).get());
+}
+```
 
 That's right, we must cast to Some, how would the compiler know for sure that we are
 in fact dealing with a Some?
@@ -77,23 +87,27 @@ are present.
 In prelude, both `Some` and `None` offer a `isSome` and a `isNone` method. But
 instead of returning boolean, they return `x is Some<T>` and `x is None<T>`.
 
-    class Some<T> {
-        isSome(): this is Some<T> { return true; }
-    }
-    class None<T> {
-        isSome(): this is Some<T> { return false; }
-    }
+```java
+class Some<T> {
+    isSome(): this is Some<T> { return true; }
+}
+class None<T> {
+    isSome(): this is Some<T> { return false; }
+}
+```
 
 ## Use in `if`
 
 Using this, we can do:
 
-    // here myOption has type Option<number>
-    if (myOption.isSome()) {
-        // here myOption has type Some<number>
-    } else {
-        // here myOption has type None<number>
-    }
+```java
+// here myOption has type Option<number>
+if (myOption.isSome()) {
+    // here myOption has type Some<number>
+} else {
+    // here myOption has type None<number>
+}
+```
 
 Careful though. We'll get the `None` type in the `else` branch only if we use
 the `type Option<T> = Some<T> | None<T>` and NOT if we use the inheritance form
@@ -111,11 +125,13 @@ Before we move on further with type guards, note that talking about the `Option`
 case in particular, prelude.ts also offers a lpretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match)
 method on Option, enabling to do:
 
-    Option.of(5).match({
-        Some: x  => "got " + x,
-        None: () => "got nothing!"
-    });
-    // => "got 5"
+```java
+Option.of(5).match({
+    Some: x  => "got " + x,
+    None: () => "got nothing!"
+});
+// => "got 5"
+```
 
 Ok, now back to type guards!
 
@@ -125,8 +141,10 @@ Besides "simple" cases like `if` statements, type guards are also applied (even 
 standard library, on `Array`, and also on prelude.ts's collections of course) on `filter`
 for instance.
 
-    Vector.of(Option.of(2),Option.none<number>(), Option.of(3)).filter(Option.isSome)
-    // => Vector.of(Option.of(2),Option.of(3)) of type Vector<Some<number>>
+```java
+Vector.of(Option.of(2),Option.none<number>(), Option.of(3)).filter(Option.isSome)
+// => Vector.of(Option.of(2),Option.of(3)) of type Vector<Some<number>>
+```
 
 Notice that the type of the result is not anymore `Vector<Option<number>>` but
 `Vector<Some<number>>`.
@@ -135,14 +153,18 @@ Prelude.ts also offers [typeOf](http://emmanueltouzery.github.io/prelude.ts/late
 and [instanceOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#instanceof)
 helpers, so that we can do:
 
-    Vector.of<number|string>(1,"a",2,3,"b").filter(typeOf("number"))
-    // => Vector.of<number>(1,2,3)
+```java
+Vector.of<number|string>(1,"a",2,3,"b").filter(typeOf("number"))
+// => Vector.of<number>(1,2,3)
+```
 
 Note that the type of the result is not anymore `Vector<number|string>` but
 `Vector<number>`. This is possible because of the type signature of `filter`:
 
-    filter<U extends T>(fn:(v:T)=>v is U): Collection<U>;
-    filter(predicate:(v:T)=>boolean): Collection<T>;
+```java
+filter<U extends T>(fn:(v:T)=>v is U): Collection<U>;
+filter(predicate:(v:T)=>boolean): Collection<T>;
+```
 
 As you can see, the type signature is overloaded. The first, more precise,
 definition, accepts only type guards and returns collections with another type
@@ -155,8 +177,10 @@ booleans, and returns a collection of the same type `T` as the input.
 is a pretty traditional FP function. It allows you to split a collection in two
 collections, depending whether or not a condition is met. For instance:
 
-    Vector.of(1,2,3,4).partition(x => x%2===0)
-    => [Vector.of(2,4),Vector.of(1,3)]
+```java
+Vector.of(1,2,3,4).partition(x => x%2===0)
+=> [Vector.of(2,4),Vector.of(1,3)]
+```
 
 This can be very handy for instance when you have a list of computations which
 may or may not have succeeded, and you would like to split that list in two lists,
@@ -165,16 +189,20 @@ use-cases.
 
 Using typescript 2.8.1 and older, the best that we can achieve in prelude.ts is:
 
-    Vector.of<number|string>(1,"a",2,3,"b").partition(typeOf("number"))
-    // => [Vector.of<number>(1,2,3), Vector.of<number|string>("a","b")]
+```java
+Vector.of<number|string>(1,"a",2,3,"b").partition(typeOf("number"))
+// => [Vector.of<number>(1,2,3), Vector.of<number|string>("a","b")]
+```
 
 As you can see, the compiler is smart enough to understand that the first
 sublist returned by `partition` will contain only `number` elements.
 That is because the definition of `partition` takes advantage of type guards:
 
 
-    partition<U extends T>(predicate:(x:T)=> x is U): [Collection<U>,Collection<T>];
-    partition(predicate:(x:T)=>boolean): [Collection<T>,Collection<T>];
+```java
+partition<U extends T>(predicate:(x:T)=> x is U): [Collection<U>,Collection<T>];
+partition(predicate:(x:T)=>boolean): [Collection<T>,Collection<T>];
+```
 
 Again we see an overloaded definition. If the parameter is a type guard, then
 instead of returning `Collection<T>`, we can return `Collection<U>` for the first
@@ -194,19 +222,25 @@ I'm writing this blog) which prevents prelude.ts from taking advantage of the
 feature, but 2.8.2 will have the fix, and that lets us achieve this:
 
 
-    Vector.of<number|string>(1,"a",2,3,"b").partition(typeOf("number"))
-    // => [Vector.of<number>(1,2,3), Vector.of<string>("a","b")]
+```java
+Vector.of<number|string>(1,"a",2,3,"b").partition(typeOf("number"))
+// => [Vector.of<number>(1,2,3), Vector.of<string>("a","b")]
+```
 
 Or even:
 
-    Vector.of<number|string|boolean>(1,"a",2,3,"b",true).partition(typeOf("number"))
-    // => [Vector.of<number>(1,2,3), Vector.of<string|boolean>("a","b",true)]
+```java
+Vector.of<number|string|boolean>(1,"a",2,3,"b",true).partition(typeOf("number"))
+// => [Vector.of<number>(1,2,3), Vector.of<string|boolean>("a","b",true)]
+```
 
 The new type signature that we need to achieve that is now:
 
 
-    partition<U extends T>(predicate:(v:T)=>v is U): [Collection<U>,Collection<Exclude<T,U>>];
-    partition(predicate:(x:T)=>boolean): [Collection<T>,Collection<T>];
+```java
+partition<U extends T>(predicate:(v:T)=>v is U): [Collection<U>,Collection<Exclude<T,U>>];
+partition(predicate:(x:T)=>boolean): [Collection<T>,Collection<T>];
+```
 
 Notice that the generic type for the second sublist in the result is `Exclude<T,U>`,
 which expresses exactly what we want to say: `T` is the "base type", `U` is the
@@ -224,10 +258,12 @@ the ability to say that `T extends U ? X : Y`. Everything else is built upon tha
 and the fact that conditional types are distributive. So if we follow the specific
 example of `Exclude`.. Its implementation is:
 
-    /**
-     * Exclude from T those types that are assignable to U
-     */
-    type Exclude<T, U> = T extends U ? never : T;
+```java
+/**
+ * Exclude from T those types that are assignable to U
+ */
+type Exclude<T, U> = T extends U ? never : T;
+```
 
 The typescript handbook explains the distributiveness aspect like this:
 
