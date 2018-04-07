@@ -199,13 +199,14 @@ That's the magic of type guards.
 
 [partition](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/vector.html#partition)
 is a pretty traditional FP function. It allows you to split a collection in two
-collections, depending whether or not a condition is met. For instance:
+collections, depending on whether or not a condition is met. For instance:
 
 ```java
 Vector.of(1,2,3,4).partition(x => x%2===0)
 => [Vector.of(2,4),Vector.of(1,3)]
 ```
 
+So it returns a pair of collections.
 This can be very handy for instance when you have a list of computations which
 may or may not have succeeded, and you would like to split that list in two lists,
 one for all the successes, and one for all the failures. But there are plenty of
@@ -214,7 +215,8 @@ use-cases.
 Using typescript 2.8.1 and older, the best that we can achieve in prelude.ts is:
 
 ```java
-Vector.of<number|string>(1,"a",2,3,"b").partition(typeOf("number"))
+Vector.of<number|string>(1,"a",2,3,"b")
+    .partition(typeOf("number"))
 // => [Vector.of<number>(1,2,3), Vector.of<number|string>("a","b")]
 ```
 
@@ -232,9 +234,11 @@ Again we see an overloaded definition. If the parameter is a type guard, then
 instead of returning `Collection<T>`, we can return `Collection<U>` for the first
 sublist.
 
-But if we return to our example, it's tricky to express in types that the
-second sublist will contain only `string` elements...
-In effect we have to tell the compiler that the type of the second
+But if we return to our example.. We had `number|string`, and we partitioned on 
+whether the element is a `number`. And typescript didn't realize that the second
+sublist could have the type `string` instead of `number|string`.
+
+To achieve that, in effect we have to tell the compiler that the type of the second
 sublist is the generic type of the input collection, _minus_ the type that we keep for
 the first sublist. Type subtraction? Sounds impossible to express right?
 
@@ -247,14 +251,16 @@ feature, but 2.8.2 will have the fix, and that lets us achieve this:
 
 
 ```java
-Vector.of<number|string>(1,"a",2,3,"b").partition(typeOf("number"))
+Vector.of<number|string>(1,"a",2,3,"b")
+    .partition(typeOf("number"))
 // => [Vector.of<number>(1,2,3), Vector.of<string>("a","b")]
 ```
 
 Or even:
 
 ```java
-Vector.of<number|string|boolean>(1,"a",2,3,"b",true).partition(typeOf("number"))
+Vector.of<number|string|boolean>(1,"a",2,3,"b",true)
+    .partition(typeOf("number"))
 // => [Vector.of<number>(1,2,3), Vector.of<string|boolean>("a","b",true)]
 ```
 
@@ -277,12 +283,14 @@ Besides `Exclude`, typescript 2.8 [adds a number of such predefined conditional 
 ## More about conditional types
 
 It is very satisfying to understand that these predefined conditional types are
-not each hardcoded in the compiler. The only mechanism known to the compiler is
-the ability to say that `T extends U ? X : Y`. Everything else is built upon that,
-and the fact that conditional types are distributive. So if we follow the specific
-example of `Exclude`.. Its implementation is:
+not each hardcoded in the compiler. The "only" mechanism known to the compiler is
+the ability to express conditions on types, compute a type based on other types
+and a condition like `T extends U ? X : Y`.
 
-```java
+Everything else is built upon that, and the fact that conditional types are distributive. 
+So if we follow the specific example of `Exclude`.. Its definition is:
+
+```javascript
 /**
  * Exclude from T those types that are assignable to U
  */
@@ -318,6 +326,8 @@ So, let's try to resolve `Exclude<string|number|boolean, number>`:
 
 And that's exactly what the typescript compiler is doing behind the scenes!
 
+This improved `partition` is currently implemented in a branch in prelude.ts,
+and we'll merge it to master when typescript 2.8.2 is released.
 
 ## Beyond `Option`
 
