@@ -6,14 +6,13 @@ tags: prelude.ts, typescript, functional-programming
 
 This post describes how the [prelude.ts](https://github.com/emmanueltouzery/prelude.ts)
 functional programming library takes advantage of typescript type guards and
-conditional types. It can also serve as an introduction to these typescript
-features in a more general context.
+conditional types. It also introduces these typescript features in a more general context.
 
 ## What are type guards
 
-### Predicates
+### Predicates and type guards
 
-Let's first define predicates: predicates are functions returning booleans. For instance,
+Let's first define _predicates_: predicates are functions returning booleans. For instance,
 `isPositive` is a predicate:
 
 ```java
@@ -80,9 +79,12 @@ That's right, we must cast to `Some`, how would the compiler know for sure that 
 in fact dealing with a Some? We can see the `if`, but the compiler doesn't know it's
 relevant if we don't tell it.
 
-For that purpose, typescript supports [flow control analysis](https://blog.mariusschulz.com/2016/09/30/typescript-2-0-control-flow-based-type-analysis)
-when [type guards](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types)
-are present.
+### Introducing type guards
+
+When using [type guards](https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-guards-and-differentiating-types),
+typescript does [flow control analysis](https://blog.mariusschulz.com/2016/09/30/typescript-2-0-control-flow-based-type-analysis)
+(pioneered by [Facebook's flow](https://github.com/facebook/flow)) so that the explicit 
+type cast is not necessary.
 
 In prelude, both `Some` and `None` offer a `isSome` and a `isNone` method. But
 instead of returning `boolean`, they return `x is Some<T>` and `x is None<T>`.
@@ -112,8 +114,8 @@ if (myOption.isSome()) {
 ```
 
 So the static type of the variable as seen by the compiler will depend on the
-context in which the variable is used. It is flow analysis (pioneered by [Facebook's
-flow](https://github.com/facebook/flow)).
+context in which the variable is used. That is the code flow analysis we were
+referring to previously.
 
 Careful though. We'll get the `None` type in the `else` branch only if we use
 the `type Option<T> = Some<T> | None<T>` and NOT if we use the inheritance form
@@ -129,7 +131,7 @@ That's already awesome, but we're just getting started!
 
 Before we move on further with type guards, note that about the `Option`
 case in particular, let me mention that prelude.ts also offers a
-pretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match)
+pretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match) [^matchdetails]
 method on Option, enabling to do:
 
 ```java
@@ -140,7 +142,7 @@ Option.of(5).match({
 // => "got 5"
 ```
 
-`match` is the catamorphism for `Option`. But now, back to type guards!
+But now, back to type guards!
 
 ## Use in `filter`
 
@@ -398,3 +400,5 @@ now they can be double-checked and made explicit by the machine.
 That's it for today! You can learn more about my typescript functional library prelude.ts
 through its [website](https://github.com/emmanueltouzery/prelude.ts), [user guide](https://github.com/emmanueltouzery/prelude.ts/wiki/Prelude.ts-user-guide) 
 and [apidocs](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/globals.html).
+
+[^matchdetails]: some trivia: `match` is the catamorphism for `Option`.
