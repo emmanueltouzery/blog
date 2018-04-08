@@ -203,7 +203,7 @@ So our next step is to make sure we're in fact dealing with a canvas element,
 using `instanceOf(HTMLCanvasElement)`. But here's the trick: that call to filter
 will not only make sure that we are dealing with a canvas element (if not we'll
 get a `None` after the filter), but also change the type of the Option.. 
-After the call, typescript we'll know that we're
+After the call, typescript will know that we're
 dealing with an `Option<HTMLCanvasElement>`, not anymore an `Option<HTMLElement>`!
 That's the magic of type guards.
 
