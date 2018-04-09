@@ -21,8 +21,9 @@ function isPositive(x: number): boolean { return x >= 0; }
 
 Type guards, then, are special types of predicates. What they return can be
 seen as special kinds of booleans. Type guards live purely in the type world
-and have no effect on the runtime at all. You can use a type guard to let
-the compiler infer a more precise type for a value in a certain context.
+and have no effect on the runtime at all. At runtime they behave as simple
+predicates. You can use a type guard to let the compiler infer a more precise
+type for a value in a certain context.
 
 ### Problem to solve
 
