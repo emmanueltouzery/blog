@@ -17,7 +17,7 @@
 #  location: "./custom-snapshot.yaml"
 
 # can't use a newer resolver currently due to https://github.com/commercialhaskell/stack/issues/3899
-resolver: lts-10.7
+resolver: lts-12.20
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -41,7 +41,9 @@ packages:
 - '.'
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
-extra-deps: []
+extra-deps:
+- skylighting-0.7.5
+- skylighting-core-0.7.5
 
 # Override default flag values for local packages and extra-deps
 flags: {}
