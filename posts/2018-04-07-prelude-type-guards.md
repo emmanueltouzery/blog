@@ -1,10 +1,10 @@
 ---
-title: Type guards and conditional types in typescript & prelude.ts
+title: Type guards and conditional types in typescript & prelude-ts
 author: emmanuel
-tags: prelude.ts, typescript, functional-programming
+tags: prelude-ts, typescript, functional-programming
 ---
 
-This post describes how the [prelude.ts](https://github.com/emmanueltouzery/prelude.ts)
+This post describes how the [prelude-ts](https://github.com/emmanueltouzery/prelude-ts)
 functional programming library takes advantage of typescript type guards and
 conditional types. It also introduces these typescript features in a more general context.
 
@@ -131,7 +131,7 @@ So, no more casts in our `if` and `else`, and less unsafe `getOrThrow` calls.
 That's already awesome, but we're just getting started!
 
 Before we move on further with type guards, note that about the `Option`
-case in particular, let me mention that prelude.ts also offers a
+case in particular, let me mention that prelude-ts also offers a
 pretty nice [match](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/option.some.html#match) [^matchdetails]
 method on Option, enabling to do:
 
@@ -148,7 +148,7 @@ But now, back to type guards!
 ## Use in `filter`
 
 Besides "simple" cases like `if` statements, type guards can also be used (even in the typescript
-standard library, on `Array`, and also in prelude.ts's collections of course) on `filter`
+standard library, on `Array`, and also in prelude-ts's collections of course) on `filter`
 for instance.
 
 ```java
@@ -163,7 +163,7 @@ type of the result is not anymore `Vector<Option<number>>` but
 `Vector<Some<number>>`: typescript realized that since we filtered by a type guard,
 the generic type of the result collection must be a `Some`.
 
-Prelude.ts also offers [typeOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#typeof)
+Prelude-ts also offers [typeOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#typeof)
 and [instanceOf](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/files/comparison.html#instanceof)
 helpers, so that we can do:
 
@@ -225,7 +225,7 @@ may or may not have succeeded, and you would like to split that list in two list
 one for all the successes, and one for all the failures. But there are plenty of
 use-cases.
 
-Using typescript 2.8.1 and older, the best that we can achieve in prelude.ts is:
+Using typescript 2.8.1 and older, the best that we can achieve in prelude-ts is:
 
 ```java
 Vector.of<number|string>(1,"a",2,3,"b")
@@ -261,7 +261,7 @@ Except that [typescript 2.8.1](https://blogs.msdn.microsoft.com/typescript/2018/
 has added [conditional types](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html).
 There is actually [a bug](https://github.com/Microsoft/TypeScript/issues/22860)
 in 2.8.1 (which is the latest version of typescript as
-I'm writing this blog) which prevents prelude.ts from taking advantage of the
+I'm writing this blog) which prevents prelude-ts from taking advantage of the
 feature, but 2.8.2 will have the fix, and that lets us achieve this:
 
 
@@ -341,13 +341,13 @@ So, let's try to resolve `Exclude<string|number|boolean, number>`:
 
 And that's exactly what the typescript compiler is doing behind the scenes!
 
-This improved `partition` is currently implemented in a branch in prelude.ts,
+This improved `partition` is currently implemented in a branch in prelude-ts,
 to be merged to master when typescript 2.8.2 is released.
 
 ## Beyond `Option`
 
-We've talked about discriminated types and type guards in prelude.ts for `Option`.
-But this pattern is applied in a number of contexts in prelude.ts, beyond the case of Option.
+We've talked about discriminated types and type guards in prelude-ts for `Option`.
+But this pattern is applied in a number of contexts in prelude-ts, beyond the case of Option.
 
 We have:
 
@@ -398,8 +398,8 @@ in typescript, have no effect at runtime, they only allow us to express to
 the compiler type-level reasonings that the developer would otherwise do mentally:
 now they can be double-checked and made explicit by the machine.
 
-That's it for today! You can learn more about my typescript functional library prelude.ts
-through its [website](https://github.com/emmanueltouzery/prelude.ts), [user guide](https://github.com/emmanueltouzery/prelude.ts/wiki/Prelude.ts-user-guide) 
+That's it for today! You can learn more about my typescript functional library prelude-ts
+through its [website](https://github.com/emmanueltouzery/prelude-ts), [user guide](https://github.com/emmanueltouzery/prelude-ts/wiki/Prelude%E2%88%92ts-user-guide) 
 and [apidocs](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/globals.html).
 
 [^matchdetails]: some trivia: `match` is the catamorphism for `Option`.
