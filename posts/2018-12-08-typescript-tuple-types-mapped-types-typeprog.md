@@ -22,7 +22,7 @@ typescript's type system to make it achieve things it was never meant to achieve
 In this blog post we won't be looking a function implementations,
 only type signatures. In the end, implementation is a javascript problem, for
 this post we're only interested in the type checking, which is typescript's
-domain.
+domain. That's why we have some dummy implementations like `return undefined as any`{.typescript}.
 
 In general in this post, I'll first write down the type definitions, and then
 explain then afterwards, so don't worry if something is not clear immediately.
