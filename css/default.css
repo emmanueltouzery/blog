@@ -202,13 +202,24 @@ div.tags a, span.tech-tag {
 }
 
 .bizarro-world {
+    padding: 10px;
     background: repeating-linear-gradient(
         45deg,
         rgb(255,255,255),
         rgb(255,255,255) 10px,
-        rgba(200,200,200, 0.2) 10px,
-        rgba(200,200,200, 0.2) 20px
+        #fbd800 10px,
+        #fbd800 20px
     );
+}
+
+.bizarro-world h1:first-of-type {
+    margin-top: 1px;
+    background: white;
+}
+
+.bizarro-world-inner {
+    background: white;
+    padding: 10px
 }
 
 pre.sourceCode a {
