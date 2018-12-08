@@ -100,7 +100,7 @@ and <span class="tech-tag">java</span>.
 
 ### Functional programming
 
-I'm the author of [prelude.ts](https://github.com/emmanueltouzery/prelude.ts), 
+I'm the author of [prelude-ts](https://github.com/emmanueltouzery/prelude-ts), 
 which is a  typescript library aiming to make functional programming concepts
 accessible and productive in typescript.
 It provides immutable & persistent collections such as a vector, set and map, and
