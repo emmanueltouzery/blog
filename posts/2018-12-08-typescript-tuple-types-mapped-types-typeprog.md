@@ -8,18 +8,18 @@ It is easy to treat typescript as a "java" with a couple of bonuses (like
 [or types/union types](https://www.typescriptlang.org/docs/handbook/advanced-types.html#union-types),
 [`keyof`{.typescript}](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-1.html#keyof-and-lookup-types)
 and [`strictNullChecks`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#--strictnullchecks)),
-but as this post tries to illustrate, that'd be leaving on the table a lot of the
+but as this post tries to illustrate, that would be leaving on the table a lot of the
 power offered by the language.
 
 This post covers a few use-cases for more advanced type
 constructs in typescript which I've met with recently, to illustrate the power
 of typescript's type system and give some practical examples to its usefulness.
 
-We'll also make an optional excursion in bizarro world, where we'll abuse
+We'll also make an optional excursion into bizarro world, where we'll abuse
 typescript's type system to make it achieve things it was never meant to achieve
 (and that, in truth, it can only achieve in trivial examples).
 
-In this blog post we won't be looking a function implementations,
+In this blog post we won't be looking at function implementations,
 only type signatures. In the end, implementation is a javascript problem, for
 this post we're only interested in the type checking, which is typescript's
 domain. That's why we have some dummy implementations like `return undefined as any`{.typescript}.
