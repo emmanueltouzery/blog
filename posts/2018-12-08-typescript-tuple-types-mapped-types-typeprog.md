@@ -577,7 +577,7 @@ to express in typescript patterns which were used in common javascript libraries
 ### Credits
 
 I must thank [Titian Cernicova-Dragomir](https://stackoverflow.com/users/125734/titian-cernicova-dragomir)
-who keeps answering my really strange and confused stackoverflow typescript
+who keeps answering my strange and confused stackoverflow typescript
 questions, and [\@qm3ster](https://github.com/qm3ster) who brought the power of
 tuples types to my attention in a discussion related to [Future](http://emmanueltouzery.github.io/prelude.ts/latest/apidoc/classes/future.html) support in prelude-ts.
 
