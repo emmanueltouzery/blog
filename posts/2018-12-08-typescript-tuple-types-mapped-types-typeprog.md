@@ -510,15 +510,15 @@ type CurryReturnType<T,P,R> = P extends [infer T1, ...any[]] ?
 
 So... in any case we return a function whose first parameter will be `T`.
 But the for the remaining parameters, we look at `P`, which are the remaining
-parameters besides the first one:
+parameters besides the first one.
 
-1. if `P` is a non-empty array (`P extends [infer T1, ...any[]]` returns true), then the
-extra parameters in our result function must be curried again. We already extracted
+Is `P` is a non-empty array (`P extends [infer T1, ...any[]]` returns true)?
+
+1. YES => then the extra parameters in our result function must be curried again. We already extracted
 the first of them: `T1`. And we wrap the rest in `CurryReturnType` -- and that's the
 type-level recursive call right here!
 
-2. If on the other hand the remaining parameters are
-the empty array, then there are no extra parameters and we stop the recursion.
+2. NO => then there are no extra parameters and we stop the recursion.
 
 But, this doesn't work :-) Typescript complains about circular references in
 type aliases.
