@@ -58,6 +58,12 @@ equivalent to the previous one:
 function myFn(...params: [string, number|null, number?]): void {}
 ```
 
+Javascript originally had [rest parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters),
+meant to allow a function to have an indefinite number of parameters;
+that syntax was then generalized through the [spread syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax),
+and now typescript can take advantage of that mechanism to capture the
+type of the parameters of a function.
+
 ### Taking advantage of tuple types
 
 In the [prelude-ts](https://github.com/emmanueltouzery/prelude-ts) functional
@@ -139,8 +145,16 @@ equivalent in this case to:
 'General_Language' | 'Map_InitialLongitude' | 'Map_InitialLatitude'
 ```
 
-So the parameter of the function must be of this or-type. And the function
-returns a promise of `SettingKey[K]`. This is a lookup type. And again, at
+So the parameter of the function must be of this or-type.
+Notice that we didn't say `fetchSetting(key: keyof SettingKey)`{.typescript},
+but instead we defined a generic type `K extends keyof SettingKey`{.typescript}.
+Because we went the extra mile, we can now talk about the precise type which
+was used by the caller. That type could be for instance `'General_Language'`{.typescript},
+which is more precise than the whole or-type. And we now have a name for
+that type, we've captured it and so we can talk about that type also in the
+return type of the function.
+
+The function returns a promise of `SettingKey[K]`. This is a lookup type. And again, at
 compile time, there will be substitution. But the important thing is that we capture `K`.
 So the function parameter takes a key, but the type it will return will depend
 on _which_ is that key... That means that:
@@ -208,9 +222,9 @@ a type `KS`, which must be a `KeyArray`. This means that we'll get a different
 
 Second, we use the `T[number]` pattern in that type definition. We can see a
 good example for this pattern in the [typescript 2.8 release notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#example-2),
-but long story short, `T[number]` refers to the element type of an array. So
-`T` must extend `any[]`, and  for instance for `T`=`string[]`, then
-`T[number]` will be `string`.
+but long story short, `T[number]` refers to the element type of an array (the
+type of the elements of the array). So `T` must extend `any[]`, and  for instance
+for `T`=`string[]`, then `T[number]` will be `string`.
 
 Let's resolve the `SettingKeyArray` type for our previous example of a `KeyArray`
 type:
@@ -283,7 +297,7 @@ not as a member method, it looks like this:
 function zip<T,U>(it1: Iterable<T>, it2: Iterable<U>): Vector<[T,U]>;
 ```
 
-Looking this now, our tuple type, the tuple type of the element types of
+Looking at this now, our tuple type, the tuple type of the element types of
 the collections -- let's call it `A` -- is clearly used for the
 result of the zip function: we return `Vector<[T,U]>`, in other words
 `Vector<A>`.
